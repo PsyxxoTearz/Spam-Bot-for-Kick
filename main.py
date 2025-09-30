@@ -1,6 +1,8 @@
 import sys
 import os
+
 from PyQt5.QtWidgets import QApplication
+
 from core.bot_manager import BotManager
 from ui.main_window import MainWindow
 

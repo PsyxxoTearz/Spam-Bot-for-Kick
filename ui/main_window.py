@@ -133,11 +133,6 @@ class MainWindow(QMainWindow):
         right_panel.addWidget(QLabel("Имя:"))
         right_panel.addWidget(self.name_input)
         
-        self.password_input = QLineEdit()
-        self.password_input.setPlaceholderText("Пароль")
-        self.password_input.setEchoMode(QLineEdit.Password)
-        right_panel.addWidget(QLabel("Пароль:"))
-        right_panel.addWidget(self.password_input)
         
         self.profile_input = QLineEdit()
         self.profile_input.setPlaceholderText("Название профиля")
@@ -212,18 +207,16 @@ class MainWindow(QMainWindow):
     
     def add_account(self):
         name = self.name_input.text().strip()
-        password = self.password_input.text().strip()
         profile = self.profile_input.text().strip()
         
-        if not name or not password or not profile:
+        if not name  or not profile:
             QMessageBox.warning(self, "Ошибка", "Заполните все поля")
             return
         
-        self.bot_manager.add_account(name, password, profile)
+        self.bot_manager.add_account(name, profile)
         self.accounts_list.addItem(f"{name} ({profile})")
         
         self.name_input.clear()
-        self.password_input.clear()
         self.profile_input.clear()
         
         QMessageBox.information(self, "Успех", "Аккаунт добавлен")

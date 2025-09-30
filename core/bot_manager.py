@@ -31,12 +31,11 @@ class BotManager:
     def save_config(self):
         os.makedirs("data", exist_ok=True)
         with open(self.config_file, 'w', encoding='utf-8') as f:
-            json.dump(self.config, ensure_ascii=False, indent=2)
+            json.dump(self.config,f, ensure_ascii=False, indent=2)
     
-    def add_account(self, name, password, profile_name):
+    def add_account(self, name, profile_name):
         account = {
             "name": name,
-            "password": password,
             "profile_dir": os.path.join(self.config["profiles_dir"], profile_name)
         }
         self.accounts.append(account)
@@ -62,14 +61,14 @@ class BotManager:
         try:
             driver.setup_driver()
             driver.login_account("https://kick.com")
-            time.sleep(3)
+            time.sleep(50)
             return True, "Настройка завершена"
         except Exception as e:
             return False, f"Ошибка: {str(e)}"
         finally:
             driver.close()
     
-    def send_single_message(self, account_index, headless=False):
+    def send_single_message(self, account_index, headless=True):
         if account_index >= len(self.accounts):
             return False, "Аккаунт не найден"
         
@@ -81,7 +80,6 @@ class BotManager:
         try:
             driver.setup_driver()
             if driver.login_account(streamer_url):
-                time.sleep(3)
                 if driver.send_message(self.config["message"]):
                     return True, "Сообщение отправлено"
                 else:

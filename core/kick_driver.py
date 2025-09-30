@@ -32,12 +32,10 @@ class KickDriver:
     
     def accept_popups(self):
         try:
-            time.sleep(2)
-            selectors = [
-                "button[title*='accept']", "button[title*='Accept']",
-                "button:contains('Accept')", "button:contains('Принять')",
-                "button:contains('Согласиться')", "button:contains('ОК')",
-                ".cky-btn-accept", "#acceptButton", ".accept-cookies"
+            selectors =  [
+                "[data-testid='accept-cookies']",
+                "[data-testid='accept-rules']",
+                "//button[contains(text(), 'Принять правила')]"
             ]
             
             for selector in selectors:
@@ -50,47 +48,40 @@ class KickDriver:
                     for button in buttons:
                         if button.is_displayed() and button.is_enabled():
                             self.driver.execute_script("arguments[0].click();", button)
-                            time.sleep(1)
                             break
                 except:
                     continue
         except:
             pass
-    
+            
     def login_account(self, streamer_url):
         self.driver.get(streamer_url)
-        time.sleep(5)
         self.accept_popups()
         return True
     
     def send_message(self, message):
-        try:
-            chat_selectors = [
-                "//div[@data-testid='chat-input']",
-                "textarea", "input[placeholder*='chat']",
-                "div[contenteditable='true']", "[role='textbox']"
-            ]
-            
-            for selector in chat_selectors:
-                try:
-                    if selector.startswith("//"):
-                        chat_input = WebDriverWait(self.driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, selector))
-                        )
-                    else:
-                        chat_input = WebDriverWait(self.driver, 10).until(
-                            EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
-                        )
-                    
-                    chat_input.click()
-                    chat_input.send_keys(message)
-                    chat_input.send_keys("\n")
-                    return True
-                except:
-                    continue
-            return False
-        except:
-            return False
+        chat_input = WebDriverWait(self.driver, 3).until(
+        EC.presence_of_element_located((By.XPATH, "//div[@data-testid='chat-input']"))
+        )
+        
+        
+        chat_input.click()
+        
+        
+        self.driver.execute_script("""
+            arguments[0].innerHTML = '';
+            arguments[0].focus();
+        """, chat_input)
+        
+        
+        chat_input.send_keys(message)
+        time.sleep(0.5)
+        
+        
+        chat_input.send_keys("\n")
+        time.sleep(1)
+        
+        return True
     
     def close(self):
         if self.driver:
